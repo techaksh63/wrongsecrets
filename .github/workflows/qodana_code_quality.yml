@@ -1,10 +1,8 @@
 name: Qodana
 on:
-  workflow_dispatch:
   pull_request:
-    branches: [master]
   push:
-    branches:
+    branches-ignore:
       - master
 
 jobs:
@@ -15,15 +13,15 @@ jobs:
       pull-requests: write
       checks: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.ref}}
           fetch-depth: 0
-      - name: 'Qodana Scan'
+      - name: Qodana Scan
         uses: JetBrains/qodana-action@v2024.3
         with:
           args: --apply-fixes
           pr-mode: true
           push-fixes: pull-request
+          commit-message: "Qodana Auto-fix applied"
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
