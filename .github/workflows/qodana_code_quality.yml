@@ -42,7 +42,7 @@ jobs:
           args: --apply-fixes
           pr-mode: true
           push-fixes: pull-request
-          commit-message: "Qodana Auto-fix applied"
+          commit-message: "Qodana Pull request report"
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
