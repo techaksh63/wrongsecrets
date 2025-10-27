@@ -3,7 +3,7 @@ WORKDIR /builder
 
 ARG argBasedVersion="1.12.8"
 
-COPY --chown=wrongsecrets target/wrongsecrets-${argBasedVersion}-SNAPSHOT.jar application.jar
+COPY --chown=wrongsecrets target/wrongsecrets-${argBasedVersion}.jar application.jar
 RUN java -Djarmode=tools -jar application.jar extract --layers --destination extracted
 
 FROM eclipse-temurin:25-jre-alpine
