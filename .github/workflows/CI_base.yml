@@ -2,11 +2,9 @@ name: CI - Test & Qodana Scan
 
 on:
   push:
-    branches:
-      - '**'   # runs on all branches pushed to remote
     branches-ignore:
       - master
-    pull_request: { }
+  pull_request: {}
 
 
 jobs:
