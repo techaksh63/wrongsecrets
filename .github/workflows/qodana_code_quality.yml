@@ -14,7 +14,7 @@ jobs:
       contents: write
       pull-requests: write
       checks: write
-      packages: write  # needed for Docker image push
+      packages: write
 
     steps:
       # 1️ Checkout source code
@@ -23,7 +23,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 2️ Set up JDK 25 (Liberica/Temurin)
+      # 2️ Set up JDK 25 (Temurin)
       - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
@@ -50,29 +50,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 6️ Log in to Container Registry (optional)
-      # Use one of these depending on where you push the image
-      # --- GitHub Container Registry (GHCR) ---
-      # - name: Log in to GitHub Container Registry
-      #   uses: docker/login-action@v3
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
-
-      # --- Docker Hub (if you have secrets set) ---
-      # - name: Log in to Docker Hub
-      #   uses: docker/login-action@v3
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # 7️ Get Maven Project Version
+      # 6 Get Maven Project Version
       - name: Read project version from pom.xml
         id: project_version
         run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
-      # 8️ Build Docker Image
+      # 7 Build Docker Image
       - name: Build Docker image
         run: |
           echo "Building image for version: ${{ steps.project_version.outputs.version }}"
@@ -83,19 +66,7 @@ jobs:
             -t wrongsecrets-app:${{ steps.project_version.outputs.version }} \
             -t wrongsecrets-app:latest .
 
-      # 9️ (Optional) Push Docker Image
-      # Uncomment below to push to GitHub Container Registry (GHCR)
-      # - name: Push Docker Image
-      #   run: |
-      #     IMAGE_ID=ghcr.io/${{ github.repository_owner }}/wrongsecrets-app
-      #     VERSION=${{ steps.project_version.outputs.version }}
-      #     echo "Pushing $IMAGE_ID:$VERSION and latest"
-      #     docker tag wrongsecrets-app:latest $IMAGE_ID:$VERSION
-      #     docker tag wrongsecrets-app:latest $IMAGE_ID:latest
-      #     docker push $IMAGE_ID:$VERSION
-      #     docker push $IMAGE_ID:latest
-
-      # 10 Save Docker image as artifact (for testing)
+      # 8 Save Docker image as artifact
       - name: Save image as artifact
         run: docker save wrongsecrets-app:latest -o wrongsecrets-app.tar
       - name: Upload image artifact

@@ -9,7 +9,7 @@ on:
 
 jobs:
   build_and_scan:
-    name: Build, Test, and Static Analysis
+    name: Test, Build, and Static Analysis
     runs-on: ubuntu-latest
 
     permissions:
@@ -32,11 +32,7 @@ jobs:
           java-version: '25'
           cache: maven
 
-      # 3️ Test with Maven
-      - name: Test Maven project
-        run: mvn clean verify
-
-      # 4️ Run Qodana Static Code Analysis
+      # 3 Run Qodana Static Code Analysis
       - name: Qodana Scan
         uses: JetBrains/qodana-action@v2024.3
         with:
@@ -45,6 +41,10 @@ jobs:
           commit-message: "Qodana code push report"
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+
+      # 4 Test with Maven
+      - name: Test Maven project
+        run: mvn clean verify
 
       # 5️ Upload Maven test reports
       - name: Upload test reports

@@ -15,7 +15,8 @@ linter: jetbrains/qodana-jvm-community:2024.3
 fixesStrategy: apply
 
 # Fail the pipeline if the number of critical issues exceeds this threshold
-failThreshold: 1000
+failThreshold: 10
+#failOnSeverity: critical
 
 # INSPECTION PROFILE – strong and detailed code quality rules
 profile:
@@ -91,5 +92,5 @@ exclude:
 
 # BOOTSTRAP – pre-commands before analysis
 bootstrap: |
-  echo "🔧 Running project preparation..."
-  mvn -B clean compile test-compile
+  echo "Running project preparation..."
+  mvn -B clean verify 
