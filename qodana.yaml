@@ -4,35 +4,93 @@
 #-------------------------------------------------------------------------------#
 version: "1.0"
 
-#Specify inspection profile for code analysis
+#------------------------------------------------------------------------------#
+# PROJECT CONFIGURATION
+#------------------------------------------------------------------------------#
+projectJDK: "21"  # Ensures consistent runtime between CI, local, and IDE
+
+linter: jetbrains/qodana-jvm-community:2024.3
+
+# Apply safe fixes automatically (formatting, imports, redundant code)
+fixesStrategy: apply
+
+# Fail the pipeline if the number of critical issues exceeds this threshold
+failThreshold: 100
+#failOnSeverity: critical
+
+# INSPECTION PROFILE – strong and detailed code quality rules
 profile:
   name: qodana.recommended
 include:
+  # Code Quality #
   - name: FieldCanBeFinal
-  - name: CollapseIfStatement
+  - name: LocalVariableCanBeFinal
+  - name: UnusedDeclaration
+  - name: UnusedAssignment
   - name: RedundantSemicolon
+  - name: RedundantCast
+  - name: UnnecessaryReturnStatement
+  - name: PointlessBooleanExpression
+  - name: ConstantConditions
+  - name: NullabilityProblems
+  - name: EqualsAndHashcode
+  - name: MissingOverrideAnnotation
+  - name: AccessToStaticFieldLockedOnInstance
+  - name: ClassReferencesSubclass
+  - name: StringOperationCanBeSimplified
 
-#Enable inspections
-#include:
-#  - name: <SomeEnabledInspectionId>
+  # Code Style #
+  - name: MethodNameSameAsClassName
+  - name: UnusedImport
+  - name: RedundantThrowsDeclaration
+  - name: SimplifiableIfStatement
+  - name: SwitchStatementWithTooFewBranches
+  - name: MagicNumber
+  - name: MethodTooLong
+  - name: OverlyComplexMethod
+  - name: ClassTooDeepInInheritanceTree
+  - name: ClassCoupling
+  - name: PackageVisibleField
 
-#Disable inspections
-#exclude:
-#  - name: <SomeDisabledInspectionId>
-#    paths:
-#      - <path/where/not/run/inspection>
+  # Performance #
+  - name: BoxingBoxedValue
+  - name: ForCanBeForeach
+  - name: StringBufferReplaceableByStringBuilder
+  - name: CollectionAddAllCanBeReplacedWithConstructor
+  - name: SimplifyStreamApiCallChains
 
-projectJDK: "21" #(Applied in CI/CD pipeline)
+  # Security #
+  - name: HardCodedPassword
+  - name: SqlDialectInspection
+  - name: SqlNoDataSourceInspection
+  - name: JpaDataSourceORMInspection
+  - name: LoggerInitializedWithForeignClass
+  - name: CommandLineArgumentInspection
+  - name: UntrustedDeserialization
+  - name: InsecureRandomUsage
+  - name: FileSystemAccessInspection
+  - name: PotentiallyInsecureTempFileCreation
+  - name: PathTraversalInspection
 
-#Execute shell command before Qodana execution (Applied in CI/CD pipeline)
-#bootstrap: sh ./prepare-qodana.sh
+  # Test Quality #
+  - name: TestMethodWithoutAssertion
+  - name: JUnit3StyleTestMethodInJUnit4Class
+  - name: TestCaseWithConstructor
+  - name: ExpectedExceptionNeverThrown
+  - name: UnusedTestMethod
 
-#Install IDE plugins before Qodana execution (Applied in CI/CD pipeline)
-#plugins:
-#  - id: <plugin.id> #(plugin id can be found at https://plugins.jetbrains.com)
+exclude:
+  # Example: exclude generated sources, test data, or build artifacts
+  - name: ALL
+    paths:
+      - target/**
+      - node_modules/**
+      - out/**
+      - .idea/**
+      - .qodana/**
+      - "**/generated/**"
 
-#Specify Qodana linter for analysis (Applied in CI/CD pipeline)
-linter: jetbrains/qodana-jvm-community:2024.3
-
-fixesStrategy: apply
-
+# BOOTSTRAP – pre-commands before analysis
+bootstrap: |
+  echo "Running project preparation..."
+  mvn -B clean verify 
