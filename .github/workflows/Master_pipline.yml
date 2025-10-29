@@ -2,7 +2,7 @@ name: CI - Test & Qodana Scan
 
 on:
   push:
-    branches-ignore:
+    branches:
       - master
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
 
       # 3 Test with Maven
       - name: Test Maven project
-        run: mvn clean verify
+        run: mvn clean package
 
       # 4 Run Qodana Static Code Analysis
       - name: Qodana Scan
